@@ -6,6 +6,7 @@ import * as path from "path";
 import * as mung from "express-mung";
 import * as log4js from "log4js";
 import indexRouter from "routes/index";
+import * as mongoose from "mongoose";
 
 // Init logger
 log4js.configure({
@@ -26,6 +27,22 @@ log4js.configure({
 const logger = log4js.getLogger("express");
 
 const app = express();
+
+// Connect to MongoDB
+const MONGO_URL: string = process.env.MONGO_URL || "localhost:27017";
+(<any>mongoose).Promise = global.Promise;
+mongoose.set("useNewUrlParser", true);
+mongoose.set("useUnifiedTopology", true);
+mongoose.connect(`mongodb://${MONGO_URL}/db`).then(
+  () => {
+    logger.info("MongoDB connected success.");
+  },
+).catch(
+  (err) => {
+    logger.error("MongoDB connection error: %s", err.toString());
+    process.exit();
+  }
+);
 
 // Config for app
 app.set("port", process.env.PORT || 3000);
