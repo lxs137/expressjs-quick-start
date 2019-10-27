@@ -15,3 +15,15 @@ export const createTask = (id: string, name: string): Promise<any> => {
     } 
   );
 }
+
+export const queryTasksByName = (name: string): Promise<any> => {
+  return Task.find({
+    "name": name
+  }).exec().then(
+    (tasks: Document[]) => tasks.map(item => item.toObject()),
+    (reason: any) => {
+      logger.error("queryTask error: ", reason);
+      return Promise.reject(reason);
+    }
+  )
+}
